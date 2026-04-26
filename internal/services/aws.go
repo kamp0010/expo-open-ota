@@ -42,10 +42,23 @@ func GetS3Client() (*s3.Client, error) {
 			s3ClientErr = fmt.Errorf("error loading AWS configuration: %w", s3ClientErr)
 			return
 		}
+		
+		// Support both AWS_BASE_ENDPOINT and AWS_ENDPOINT for S3-compatible providers
 		baseEndpoint := config.GetEnv("AWS_BASE_ENDPOINT")
-		if baseEndpoint != "" {
+		if baseEndpoint == "" {
+			baseEndpoint = config.GetEnv("AWS_ENDPOINT")
+		}
+		
+		forcePathStyle := config.GetEnv("AWS_FORCE_PATH_STYLE") == "true"
+		
+		if baseEndpoint != "" || forcePathStyle {
 			s3Client = s3.NewFromConfig(cfg, func(o *s3.Options) {
-				o.BaseEndpoint = aws.String(baseEndpoint)
+				if baseEndpoint != "" {
+					o.BaseEndpoint = aws.String(baseEndpoint)
+				}
+				if forcePathStyle {
+					o.UsePathStyle = forcePathStyle
+				}
 			})
 		} else {
 			s3Client = s3.NewFromConfig(cfg)
