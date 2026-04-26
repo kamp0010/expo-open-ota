@@ -107,6 +107,7 @@ var DefaultEnvValues = map[string]string{
 	"JWT_SECRET":                  "",
 	"AWS_REGION":                  "eu-west-3",
 	"AWS_BASE_ENDPOINT":           "",
+	"AWS_FORCE_PATH_STYLE":        "false",
 }
 
 
